@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { TimeoutInterceptor } from 'src/common/interceptors/timeout.interceptor';
 import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { DatabaseModule } from 'src/modules/database/database.module';
 
 @Module({
@@ -26,6 +27,10 @@ import { DatabaseModule } from 'src/modules/database/database.module';
         {
             provide: APP_INTERCEPTOR,
             useClass: TimeoutInterceptor,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
         },
     ],
 })
