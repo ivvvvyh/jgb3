@@ -1,17 +1,21 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { TimeoutInterceptor } from 'src/common/interceptors/timeout.interceptor';
 import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { DatabaseModule } from 'src/modules/database/database.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { UserModule } from 'src/modules/user/user.module';
 
 @Module({
-    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule],
+    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, UserModule],
     controllers: [],
     providers: [
+        JwtService,
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,

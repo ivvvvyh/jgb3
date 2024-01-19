@@ -17,3 +17,15 @@ export class RequestTimeoutException extends HttpException {
         super(message ?? 'Request Timeout.', HttpStatus.REQUEST_TIMEOUT);
     }
 }
+
+export class ConflictException extends HttpException {
+    constructor(message?: string) {
+        super(message ?? 'Conflict.', HttpStatus.CONFLICT);
+    }
+}
+
+export class UnauthorizedException extends HttpException {
+    constructor(message?: string) {
+        super(message ?? 'Unauthorized.', HttpStatus.UNAUTHORIZED);
+    }
+}
