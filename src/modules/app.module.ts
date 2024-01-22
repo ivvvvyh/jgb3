@@ -10,9 +10,10 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { DatabaseModule } from 'src/modules/database/database.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { UserModule } from 'src/modules/user/user.module';
+import { CacheModule } from 'src/modules/database/cache.module';
 
 @Module({
-    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, UserModule],
+    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, CacheModule, AuthModule, UserModule],
     controllers: [],
     providers: [
         JwtService,
