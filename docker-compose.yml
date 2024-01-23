@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgis/postgis:latest
     environment:
       POSTGRES_DB:  ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
@@ -12,9 +12,10 @@ services:
     networks:
       - backend
     container_name: postgres
-
+    
   redis:
     image: redis:latest
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD} # 這是一個 Redis 的環境變數例子
     ports:
@@ -25,3 +26,6 @@ services:
 
 networks:
   backend:
+
+volumes:
+  database_volume:
