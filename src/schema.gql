@@ -1,0 +1,25 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CenterDTO {
+  latitude: Float!
+  longitude: Float!
+}
+
+type CoordinateDTO {
+  latitude: Float
+  longitude: Float
+}
+
+type MapInfoResponseDTO {
+  amount: Int!
+  city_id: Int
+  coordinates: CoordinateDTO
+  country_id: Int
+  district_id: Int
+}
+
+type Query {
+  mapInfo(center: CenterDTO!, city_id: Int, country_id: Int, district_id: Int, radius: Int!, zoom: Int!): [MapInfoResponseDTO!]!
+}

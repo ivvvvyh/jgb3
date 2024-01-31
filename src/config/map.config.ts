@@ -1,0 +1,23 @@
+export const viewLevel = {
+    TW: {
+        country: 3,
+        city: 6,
+        district: 9,
+    },
+    VN: {},
+    PH: {},
+    KH: {},
+    TH: {},
+    JP: {},
+    CN: {},
+    US: {},
+    HK: {},
+    MY: {},
+    GB: {},
+    FR: {},
+    KR: {},
+    ID: {},
+    DE: {},
+    SG: {},
+    CA: {},
+};

@@ -29,3 +29,9 @@ export class UnauthorizedException extends HttpException {
         super(message ?? 'Unauthorized.', HttpStatus.UNAUTHORIZED);
     }
 }
+
+export class InterServerException extends HttpException {
+    constructor(message?: string) {
+        super(message ?? 'Internal Server Error.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}

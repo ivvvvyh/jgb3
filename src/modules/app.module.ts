@@ -11,9 +11,28 @@ import { DatabaseModule } from 'src/modules/database/database.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { CacheModule } from 'src/modules/database/cache.module';
+import { HttpModule } from '@nestjs/axios';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+import { MapModule } from 'src/modules/map/map.module';
 
 @Module({
-    imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, CacheModule, AuthModule, UserModule],
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true }),
+        DatabaseModule,
+        CacheModule,
+        HttpModule,
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+            driver: ApolloDriver,
+            autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+            sortSchema: true,
+            playground: true,
+        }),
+        AuthModule,
+        UserModule,
+        MapModule,
+    ],
     controllers: [],
     providers: [
         JwtService,
