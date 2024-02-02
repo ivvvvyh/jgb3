@@ -17,18 +17,6 @@ export class Estate {
     })
     name: string;
 
-    @ManyToOne(() => Country, (country) => country.estate)
-    @JoinColumn({ name: 'country_id' })
-    country: Country;
-
-    @ManyToOne(() => City, (city) => city.estate)
-    @JoinColumn({ name: 'city_id' })
-    city: City;
-
-    @ManyToOne(() => District, (district) => district.estate)
-    @JoinColumn({ name: 'district_id' })
-    district: District;
-
     @Column({
         type: 'varchar',
         length: 255,
@@ -46,6 +34,64 @@ export class Estate {
     coordinates: Point;
 
     @Column({
+        type: 'varchar',
+        length: 255,
+        comment: '用途',
+        nullable: true,
+    })
+    usage: string;
+
+    @Column({
+        type: 'varchar',
+        length: 255,
+        comment: '建築類型',
+        nullable: true,
+    })
+    building_type: string;
+
+    @Column({
+        type: 'int',
+        comment: '樓層',
+        nullable: true,
+    })
+    floor: number;
+
+    @Column({
+        type: 'int',
+        comment: '總樓層',
+        nullable: true,
+    })
+    total_floor: number;
+
+    @Column({
+        type: 'json',
+        comment: '坪數',
+        default: () => '\'{"m2": 0, "sqm": 0, "sq_ft": 0}\'',
+    })
+    size: Record<string, any>;
+
+    @Column({
+        type: 'int',
+        comment: '租金',
+        nullable: true,
+    })
+    rent: number;
+
+    @Column({
+        type: 'json',
+        comment: '圖片',
+        nullable: true,
+    })
+    gallery: Record<string, any>[];
+
+    @Column({
+        type: 'json',
+        comment: '格局',
+        default: () => '\'{"room": 0, "living_room": 0, "bathroom": 0, "kitchen": 0, "balcony": 0}\'',
+    })
+    layout: Record<string, any>[];
+
+    @Column({
         type: 'timestamp',
         default: () => 'NOW()',
         comment: '建立時間',
@@ -59,4 +105,16 @@ export class Estate {
         comment: '更新時間',
     })
     updated_at: Date;
+
+    @ManyToOne(() => Country, (country) => country.estate)
+    @JoinColumn({ name: 'country_id' })
+    country: Country;
+
+    @ManyToOne(() => City, (city) => city.estate)
+    @JoinColumn({ name: 'city_id' })
+    city: City;
+
+    @ManyToOne(() => District, (district) => district.estate)
+    @JoinColumn({ name: 'district_id' })
+    district: District;
 }

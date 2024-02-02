@@ -2,24 +2,102 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input CenterDTO {
-  latitude: Float!
-  longitude: Float!
-}
-
 type CoordinateDTO {
+  """緯度"""
   latitude: Float
+
+  """經度"""
   longitude: Float
 }
 
-type MapInfoResponseDTO {
+type EstateResponseDTO {
+  """地址"""
+  address: String
+
+  """建築類型"""
+  building_type: String
+  city_id: Int
+
+  """座標"""
+  coordinates: CoordinateDTO
+  country_id: Int
+  district_id: Int
+
+  """物件樓層"""
+  floor: Int
+  id: Int
+
+  """格局"""
+  layout: JSONObject
+
+  """物件名稱"""
+  name: String
+
+  """租金"""
+  rent: Int
+
+  """坪數"""
+  size: JSONObject
+
+  """總樓層"""
+  total_floor: Int
+
+  """用途"""
+  usage: String
+}
+
+type EstateResponseDTOEdge {
+  cursor: String!
+  node: EstateResponseDTO!
+}
+
+type InfoResponseDTO {
   amount: Int!
   city_id: Int
+
+  """座標"""
   coordinates: CoordinateDTO
   country_id: Int
   district_id: Int
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+input LocationInput {
+  """緯度"""
+  latitude: Float!
+
+  """經度"""
+  longitude: Float!
+}
+
+type MapInfoResponseDTO {
+  estates(offset: Int!, page: Int!, skip: Int): PaginatedEstateDTO!
+  info: [InfoResponseDTO!]
+}
+
+type PaginatedEstateDTO {
+  edges: [EstateResponseDTOEdge!]
+  hasNextPage: Boolean!
+  nodes: [EstateResponseDTO!]
+  totalCount: Int!
+}
+
 type Query {
-  mapInfo(center: CenterDTO!, city_id: Int, country_id: Int, district_id: Int, radius: Int!, zoom: Int!): [MapInfoResponseDTO!]!
+  mapInfo(
+    """地圖中心點"""
+    center: LocationInput!
+    city_id: Int
+    country_id: Int
+    district_id: Int
+
+    """半徑（米）"""
+    radius: Int!
+
+    """縮放級距"""
+    zoom: Int!
+  ): MapInfoResponseDTO!
 }

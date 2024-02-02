@@ -8,7 +8,7 @@ import { catchError, map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { Country } from 'src/entity/countries.entity';
 import { Estate } from 'src/entity/estates.entity';
-import { GetMapInfoDTO, CoordinateDTO } from 'src/resolvers/map/dto/map.dto';
+import { GetMapInfoDTO, CoordinateDTO, PaginatedDTO } from 'src/resolvers/map/dto/map.dto';
 import { InterServerException, NotFoundException } from 'src/common/exceptions/custom.exception';
 import { MAP_VIEW_LEVEL } from 'src/common/enums/map.enum';
 import { BaseService } from 'src/services/base.service';
@@ -54,16 +54,14 @@ export class MapService extends BaseService<Estate> {
         return response;
     }
 
-    async getViewAmount(data: Omit<GetMapInfoDTO, 'zoom'> & { level: MAP_VIEW_LEVEL }) {
+    async getEstatesAmountInRange(data: Omit<GetMapInfoDTO, 'zoom'> & { level: MAP_VIEW_LEVEL }) {
         const { country_id, city_id, district_id, level, center, radius } = data;
 
         const queryBuilder = this.estateRepository.createQueryBuilder('estate');
 
         const whereConditions: Record<string, any> = { country_id, city_id, district_id };
         Object.entries(whereConditions).forEach(([key, value]) => {
-            if (value) {
-                queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
-            }
+            if (value) queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
         });
 
         let selectColumns: string[];
@@ -87,8 +85,8 @@ export class MapService extends BaseService<Estate> {
 
             default:
                 selectColumns = [
-                    `ST_X(ST_SnapToGrid(estate.coordinates::geometry, 0.01, 0.01)) AS latitude`,
-                    `ST_Y(ST_SnapToGrid(estate.coordinates::geometry, 0.01, 0.01)) AS longitude`,
+                    `ST_X(ST_SnapToGrid(estate.coordinates::geometry, 0.01, 0.01)) AS longitude`,
+                    `ST_Y(ST_SnapToGrid(estate.coordinates::geometry, 0.01, 0.01)) AS latitude`,
                     'COUNT(*) AS amount',
                 ];
                 groupByColumns = [
@@ -126,5 +124,65 @@ export class MapService extends BaseService<Estate> {
         }
 
         return result;
+    }
+
+    async getEstatesByPage(data: Omit<GetMapInfoDTO, 'zoom'> & Omit<PaginatedDTO, 'page'>) {
+        const { country_id, city_id, district_id, center, radius, skip, offset } = data;
+
+        const queryBuilder = this.estateRepository.createQueryBuilder('estate');
+        // 地區條件
+        const whereConditions: Record<string, any> = { country_id, city_id, district_id };
+        Object.entries(whereConditions).forEach(([key, value]) => {
+            if (value) queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
+        });
+
+        // 定位點條件
+        if (center && radius) {
+            const { longitude, latitude } = center;
+            queryBuilder
+                .andWhere(
+                    `ST_DWithin(
+                estate.coordinates::geography,
+                ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
+                :radius
+            )`,
+                )
+                .setParameters({ longitude, latitude, radius });
+        }
+
+        let result = await queryBuilder
+            .select([
+                'id',
+                'name',
+                'country_id',
+                'city_id',
+                'district_id',
+                'address',
+                'ST_X(coordinates::geometry) AS longitude',
+                'ST_Y(coordinates::geometry) AS latitude',
+                'floor',
+                'total_floor',
+                'usage',
+                'building_type',
+                'rent',
+                'gallery',
+                'layout',
+                'size',
+            ])
+            .skip(skip)
+            .take(offset)
+            .getRawMany();
+
+        result = result.map((item) => ({
+            ...item,
+            coordinates: {
+                latitude: item.latitude,
+                longitude: item.longitude,
+            },
+        }));
+
+        let totalCount = await queryBuilder.getCount();
+
+        return { result, totalCount };
     }
 }
