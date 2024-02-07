@@ -1,16 +1,13 @@
 import { IsEmail } from 'class-validator';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 @Entity('user')
-export class User {
+export class User extends BaseEntity {
     constructor(partial: Partial<User>) {
+        super();
         Object.assign(this, partial);
     }
-
-    @PrimaryGeneratedColumn({
-        comment: 'ID',
-    })
-    id: number;
 
     @Column({
         type: 'varchar',
@@ -27,19 +24,4 @@ export class User {
         comment: '使用者密碼',
     })
     password: string;
-
-    @Column({
-        type: 'timestamp',
-        default: () => 'NOW()',
-        comment: '建立時間',
-    })
-    created_at: Date;
-
-    @Column({
-        type: 'timestamp',
-        default: () => 'NOW()',
-        onUpdate: 'NOW()',
-        comment: '更新時間',
-    })
-    updated_at: Date;
 }
