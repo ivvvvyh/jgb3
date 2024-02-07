@@ -15,7 +15,7 @@ type EstateResponseDTO {
   address: String
 
   """建築類型"""
-  buildingType: String
+  buildingType: Int
   cityId: Int
 
   """座標"""
@@ -36,14 +36,17 @@ type EstateResponseDTO {
   """租金"""
   rent: Int
 
-  """坪數"""
-  size: JSONObject
+  """房間數量"""
+  roomCount: Int
+
+  """坪數(m2)"""
+  size: Float
 
   """總樓層"""
   totalFloor: Int
 
   """用途"""
-  usage: String
+  usage: Int
 }
 
 type EstateResponseDTOEdge {

@@ -1,5 +1,6 @@
 import { ArgsType, Field, Int, InputType, ObjectType, Float } from '@nestjs/graphql';
 import { IsInt, IsJSON, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { Expose } from 'class-transformer';
 import { Type } from 'class-transformer';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Paginated } from 'src/utils/pagination.utils';
@@ -43,35 +44,38 @@ export class GetMapInfoDTO {
     @Field((type) => Int, { nullable: true })
     @IsInt()
     @IsOptional()
-    country_id?: number;
+    countryId?: number;
 
     @Field((type) => Int, { nullable: true })
     @IsInt()
     @IsOptional()
-    city_id?: number;
+    cityId?: number;
 
     @Field((type) => Int, { nullable: true })
     @IsInt()
     @IsOptional()
-    district_id?: number;
+    districtId?: number;
 }
 
 @ObjectType()
 export class AreaInput {
     @Field((type) => Int, { nullable: true })
     @IsInt()
+    @Expose({ name: 'country_id' })
     @IsOptional()
-    country_id?: number;
+    countryId?: number;
 
     @Field((type) => Int, { nullable: true })
     @IsInt()
+    @Expose({ name: 'city_id' })
     @IsOptional()
-    city_id?: number;
+    cityId?: number;
 
     @Field((type) => Int, { nullable: true })
     @IsInt()
+    @Expose({ name: 'district_id' })
     @IsOptional()
-    district_id?: number;
+    districtId?: number;
 }
 
 @ObjectType()
@@ -81,9 +85,11 @@ export class InfoResponseDTO extends AreaInput {
 
     @Field((type) => Int)
     @IsInt()
+    @Expose()
     amount: number;
 }
 
+@Expose()
 @ObjectType()
 export class EstateResponseDTO extends AreaInput {
     @Field((type) => Int, { nullable: true })
@@ -109,15 +115,16 @@ export class EstateResponseDTO extends AreaInput {
     @Field(() => CoordinateDTO, { nullable: true, description: '座標' })
     coordinates?: CoordinateDTO;
 
-    @Field((type) => String, { nullable: true, description: '用途' })
-    @IsString()
+    @Field((type) => Int, { nullable: true, description: '用途' })
+    @IsInt()
     @IsOptional()
-    usage?: string;
+    usage?: number;
 
-    @Field((type) => String, { nullable: true, description: '建築類型' })
-    @IsString()
+    @Field((type) => Int, { nullable: true, description: '建築類型' })
+    @IsInt()
+    @Expose({ name: 'building_type' })
     @IsOptional()
-    building_type?: string;
+    buildingType?: number;
 
     @Field((type) => Int, { nullable: true, description: '物件樓層' })
     @IsInt()
@@ -126,13 +133,20 @@ export class EstateResponseDTO extends AreaInput {
 
     @Field((type) => Int, { nullable: true, description: '總樓層' })
     @IsInt()
+    @Expose({ name: 'total_floor' })
     @IsOptional()
-    total_floor?: number;
+    totalFloor?: number;
 
-    @Field((type) => GraphQLJSONObject, { nullable: true, description: '坪數' })
-    @IsJSON()
+    @Field((type) => Float, { nullable: true, description: '坪數(m2)' })
+    @IsInt()
     @IsOptional()
-    size?: Record<string, any>;
+    size?: number;
+
+    @Field((type) => Int, { nullable: true, description: '房間數量' })
+    @IsInt()
+    @Expose({ name: 'room_count' })
+    @IsOptional()
+    roomCount?: number;
 
     @Field((type) => GraphQLJSONObject, { nullable: true, description: '格局' })
     @IsJSON()

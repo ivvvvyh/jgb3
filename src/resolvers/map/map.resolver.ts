@@ -13,14 +13,14 @@ export class MapResolver {
     @Query((returns) => MapInfoResponseDTO, { name: 'mapInfo' })
     async getMapInfo(@Args() args: GetMapInfoDTO, @Context() ctx) {
         const { zoom, ...mapInfoArgs } = args;
-        const { center, country_id } = mapInfoArgs;
+        const { center, countryId } = mapInfoArgs;
         ctx.getMapInfoArgs = mapInfoArgs;
 
         let viewLevel = MAP_VIEW_LEVEL.COUNTRY;
         const countryZoomLevel = 3;
         if (zoom > countryZoomLevel) {
-            const countryCode = country_id
-                ? await this.mapService.getCountryCodeById(country_id)
+            const countryCode = countryId
+                ? await this.mapService.getCountryCodeById(countryId)
                 : await this.mapService.getCountryCodeByCoordinate(center);
             viewLevel = getMapViewLevel(countryCode, zoom);
         }
