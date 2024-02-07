@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -16,6 +16,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { MapModule } from 'src/modules/map/map.module';
+import { AppLoggerMiddleware } from '../common/middlewars/logger.middleware';
+
+@Module({
+    imports: [AuthModule, UserModule, MapModule],
+})
+export class APIModule {}
 
 @Module({
     imports: [
@@ -29,9 +35,7 @@ import { MapModule } from 'src/modules/map/map.module';
             sortSchema: true,
             playground: true,
         }),
-        AuthModule,
-        UserModule,
-        MapModule,
+        APIModule,
     ],
     controllers: [],
     providers: [
@@ -58,4 +62,8 @@ import { MapModule } from 'src/modules/map/map.module';
         },
     ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(AppLoggerMiddleware).forRoutes('/');
+    }
+}
