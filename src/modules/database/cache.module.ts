@@ -6,10 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
     imports: [
         CacheManagerModule.registerAsync({
+            isGlobal: true,
             imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
-                isGlobal: true,
                 store: redisStore,
                 host: configService.get('REDIS_HOST'),
                 port: configService.get<number>('REDIS_PORT'),
@@ -17,5 +17,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             }),
         }),
     ],
+    exports: [CacheModule],
 })
 export class CacheModule {}

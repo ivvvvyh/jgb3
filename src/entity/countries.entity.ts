@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { City } from 'src/entity/cities.entity';
 import { Estate } from 'src/entity/estates.entity';
 import { District } from './districts.entity';
@@ -36,10 +36,6 @@ export class Country {
     @OneToMany((type) => Estate, (estate) => estate.country)
     estate: Estate[];
 
-    @Column({
-        type: 'timestamp',
-        default: () => 'NOW()',
-        comment: '建立時間',
-    })
+    @CreateDateColumn({ comment: '建立時間' })
     created_at: Date;
 }

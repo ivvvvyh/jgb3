@@ -1,19 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Point } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Point } from 'typeorm';
 import { Country } from 'src/entity/countries.entity';
 import { City } from 'src/entity/cities.entity';
 import { District } from './districts.entity';
+import { BaseEntity } from './base.entity';
 
 @Entity('estate')
-export class Estate {
-    @PrimaryGeneratedColumn({
-        comment: 'ID',
-    })
-    id: number;
-
+export class Estate extends BaseEntity {
     @Column({
         type: 'varchar',
         length: 255,
         comment: '物件名稱',
+        nullable: true,
     })
     name: string;
 
@@ -21,6 +18,7 @@ export class Estate {
         type: 'varchar',
         length: 255,
         comment: '地址',
+        nullable: true,
     })
     address: string;
 
@@ -34,20 +32,18 @@ export class Estate {
     coordinates: Point;
 
     @Column({
-        type: 'varchar',
-        length: 255,
-        comment: '用途',
+        type: 'int2',
+        comment: '用途(1:住宅、2:商用、3:車位)',
         nullable: true,
     })
-    usage: string;
+    usage: number;
 
     @Column({
-        type: 'varchar',
-        length: 255,
-        comment: '建築類型',
+        type: 'int2',
+        comment: '建築類型(1:大樓、2:公寓、3:透天厝、4:別墅、5:華夏、6:農舍)',
         nullable: true,
     })
-    building_type: string;
+    building_type: number;
 
     @Column({
         type: 'int',
@@ -64,11 +60,11 @@ export class Estate {
     total_floor: number;
 
     @Column({
-        type: 'json',
-        comment: '坪數',
-        default: () => '\'{"m2": 0, "sqm": 0, "sq_ft": 0}\'',
+        type: 'float',
+        comment: '坪數(m2)',
+        nullable: true,
     })
-    size: Record<string, any>;
+    size: number;
 
     @Column({
         type: 'int',
@@ -85,26 +81,18 @@ export class Estate {
     gallery: Record<string, any>[];
 
     @Column({
+        type: 'int',
+        comment: '房間數量',
+        default: 0,
+    })
+    room_count: number;
+
+    @Column({
         type: 'json',
         comment: '格局',
         default: () => '\'{"room": 0, "living_room": 0, "bathroom": 0, "kitchen": 0, "balcony": 0}\'',
     })
     layout: Record<string, any>[];
-
-    @Column({
-        type: 'timestamp',
-        default: () => 'NOW()',
-        comment: '建立時間',
-    })
-    created_at: Date;
-
-    @Column({
-        type: 'timestamp',
-        default: () => 'NOW()',
-        onUpdate: 'NOW()',
-        comment: '更新時間',
-    })
-    updated_at: Date;
 
     @ManyToOne(() => Country, (country) => country.estate)
     @JoinColumn({ name: 'country_id' })
