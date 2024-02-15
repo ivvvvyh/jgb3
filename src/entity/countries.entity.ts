@@ -1,7 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
-import { City } from 'src/entity/cities.entity';
-import { Estate } from 'src/entity/estates.entity';
-import { District } from './districts.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('country')
 export class Country {
@@ -26,15 +23,6 @@ export class Country {
         nullable: true,
     })
     code: string;
-
-    @OneToMany((type) => City, (city) => city.country)
-    city: City[];
-
-    @OneToMany((type) => District, (district) => district.country)
-    district: District[];
-
-    @OneToMany((type) => Estate, (estate) => estate.country)
-    estate: Estate[];
 
     @CreateDateColumn({ comment: '建立時間' })
     created_at: Date;

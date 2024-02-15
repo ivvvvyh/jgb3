@@ -1,11 +1,10 @@
-import { Entity, Column, ManyToOne, JoinColumn, Point } from 'typeorm';
-import { Country } from 'src/entity/countries.entity';
-import { City } from 'src/entity/cities.entity';
-import { District } from './districts.entity';
-import { BaseEntity } from './base.entity';
+import { Entity, Column, Point, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('estate')
-export class Estate extends BaseEntity {
+export class Estate {
+    @PrimaryGeneratedColumn({ comment: 'ID' })
+    id: number;
+
     @Column({
         type: 'varchar',
         length: 255,
@@ -94,15 +93,30 @@ export class Estate extends BaseEntity {
     })
     layout: Record<string, any>[];
 
-    @ManyToOne(() => Country, (country) => country.estate)
-    @JoinColumn({ name: 'country_id' })
-    country: Country;
+    @Column({
+        type: 'int',
+        comment: '國家 ID',
+        nullable: true,
+    })
+    country_id: number;
 
-    @ManyToOne(() => City, (city) => city.estate)
-    @JoinColumn({ name: 'city_id' })
-    city: City;
+    @Column({
+        type: 'int',
+        comment: '城市 ID',
+        nullable: true,
+    })
+    city_id: number;
 
-    @ManyToOne(() => District, (district) => district.estate)
-    @JoinColumn({ name: 'district_id' })
-    district: District;
+    @Column({
+        type: 'int',
+        comment: '鄉鎮 ID',
+        nullable: true,
+    })
+    district_id: number;
+
+    @UpdateDateColumn({ comment: '更新時間', onUpdate: 'NOW()' })
+    updated_at: Date;
+
+    @CreateDateColumn({ comment: '建立時間' })
+    created_at: Date;
 }

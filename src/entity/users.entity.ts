@@ -1,13 +1,10 @@
 import { IsEmail } from 'class-validator';
-import { Entity, Column } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('user')
-export class User extends BaseEntity {
-    constructor(partial: Partial<User>) {
-        super();
-        Object.assign(this, partial);
-    }
+export class User {
+    @PrimaryGeneratedColumn({ comment: 'ID' })
+    id: number;
 
     @Column({
         type: 'varchar',
@@ -24,4 +21,10 @@ export class User extends BaseEntity {
         comment: '使用者密碼',
     })
     password: string;
+
+    @UpdateDateColumn({ comment: '更新時間', onUpdate: 'NOW()' })
+    updated_at: Date;
+
+    @CreateDateColumn({ comment: '建立時間' })
+    created_at: Date;
 }
