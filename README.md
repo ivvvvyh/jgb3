@@ -21,6 +21,12 @@ docker-compose up
 $ npm install
 ```
 
+## 建立基本資料
+
+```bash
+$ npm run seed
+```
+
 ## 啟動
 
 ```bash
