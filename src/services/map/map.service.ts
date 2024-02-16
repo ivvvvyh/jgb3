@@ -15,6 +15,7 @@ import { BaseService } from 'src/services/base.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { plainToClass } from 'class-transformer';
+import { snakeCase } from 'src/utils/database.utils';
 
 @Injectable()
 export class MapService extends BaseService<Estate> {
@@ -59,19 +60,44 @@ export class MapService extends BaseService<Estate> {
     }
 
     async getEstatesAmountInRange(data: Omit<GetMapInfoDTO, 'zoom'> & { level: MAP_VIEW_LEVEL }): Promise<InfoResponseDTO[]> {
-        const { countryId, cityId, districtId, level, center, radius } = data;
+        const { countryId, cityId, districtId, level, center, radius, buildingType, roomCount, minRoomCount, maxRent, minRent } = data;
 
         const queryBuilder = this.estateRepository.createQueryBuilder('estate');
 
-        const whereConditions: Record<string, any> = { country_id: countryId, city_id: cityId, district_id: districtId };
+        const whereConditions: Record<string, any> = {
+            countryId,
+            cityId,
+            districtId,
+            buildingType,
+            roomCount,
+            maxRent,
+            minRent,
+            minRoomCount,
+        };
         Object.entries(whereConditions).forEach(([key, value]) => {
-            if (value) queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
+            if (value) {
+                const transformedKey = snakeCase(key);
+                switch (transformedKey) {
+                    case 'min_rent':
+                        queryBuilder.andWhere(`rent >= :${key}`, { [key]: value });
+                        break;
+                    case 'max_rent':
+                        queryBuilder.andWhere(`rent <= :${key}`, { [key]: value });
+                        break;
+                    case 'min_room_count':
+                        queryBuilder.andWhere(`room_count >= :${key}`, { [key]: value });
+                        break;
+                    default:
+                        queryBuilder.andWhere(`${transformedKey} = :${key}`, { [key]: value });
+                        break;
+                }
+            }
         });
 
         let selectColumns: string[];
         let groupByColumns: string[];
 
-        let redisKey = `map:level:${level}:country:${countryId ?? 0}:city:${cityId ?? 0}:district:${districtId ?? 0}`;
+        let redisKey = `map:level:${level}:country:${countryId ?? 0}:city:${cityId ?? 0}:district:${districtId ?? 0}:buildingType:${buildingType ?? 0}:roomCount:${roomCount ?? 0}:minRoomCount:${minRoomCount ?? 0}:minRent:${minRent ?? 0}:maxRent:${maxRent ?? 0}`;
         switch (level) {
             case MAP_VIEW_LEVEL.COUNTRY:
                 selectColumns = ['country_id', 'COUNT(id) as amount'];
@@ -132,13 +158,38 @@ export class MapService extends BaseService<Estate> {
     }
 
     async getEstatesByPage(data: Omit<GetMapInfoDTO, 'zoom'> & Omit<PaginatedDTO, 'page'>) {
-        const { countryId, cityId, districtId, center, radius, skip, offset } = data;
+        const { countryId, cityId, districtId, center, radius, skip, offset, buildingType, roomCount, maxRent, minRent, minRoomCount } = data;
 
         const queryBuilder = this.estateRepository.createQueryBuilder('estate');
         // 地區條件
-        const whereConditions: Record<string, any> = { country_id: countryId, city_id: cityId, district_id: districtId };
+        const whereConditions: Record<string, any> = {
+            countryId,
+            cityId,
+            districtId,
+            buildingType,
+            roomCount,
+            maxRent,
+            minRent,
+            minRoomCount,
+        };
         Object.entries(whereConditions).forEach(([key, value]) => {
-            if (value) queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
+            if (value) {
+                const transformedKey = snakeCase(key);
+                switch (transformedKey) {
+                    case 'min_rent':
+                        queryBuilder.andWhere(`rent >= :${key}`, { [key]: value });
+                        break;
+                    case 'max_rent':
+                        queryBuilder.andWhere(`rent <= :${key}`, { [key]: value });
+                        break;
+                    case 'min_room_count':
+                        queryBuilder.andWhere(`room_count >= :${key}`, { [key]: value });
+                        break;
+                    default:
+                        queryBuilder.andWhere(`${transformedKey} = :${key}`, { [key]: value });
+                        break;
+                }
+            }
         });
 
         // 定位點條件
