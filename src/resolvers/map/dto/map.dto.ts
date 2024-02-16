@@ -55,6 +55,31 @@ export class GetMapInfoDTO {
     @IsInt()
     @IsOptional()
     districtId?: number;
+
+    @Field((type) => Int, { nullable: true, description: '建築類型' })
+    @IsInt()
+    @IsOptional()
+    buildingType?: number;
+
+    @Field((type) => Int, { nullable: true, description: '房間數量' })
+    @IsInt()
+    @IsOptional()
+    roomCount?: number;
+
+    @Field((type) => Int, { nullable: true, description: '最低房間數量' })
+    @IsInt()
+    @IsOptional()
+    minRoomCount?: number;
+
+    @Field((type) => Int, { nullable: true, description: '最低租金' })
+    @IsInt()
+    @IsOptional()
+    minRent?: number;
+
+    @Field((type) => Int, { nullable: true, description: '最高租金' })
+    @IsInt()
+    @IsOptional()
+    maxRent?: number;
 }
 
 @ObjectType()

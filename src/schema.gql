@@ -91,14 +91,29 @@ type PaginatedEstateDTO {
 
 type Query {
   mapInfo(
+    """建築類型"""
+    buildingType: Int
+
     """地圖中心點"""
     center: LocationInput!
     cityId: Int
     countryId: Int
     districtId: Int
 
+    """最高租金"""
+    maxRent: Int
+
+    """最低租金"""
+    minRent: Int
+
+    """最低房間數量"""
+    minRoomCount: Int
+
     """半徑（米）"""
     radius: Int!
+
+    """房間數量"""
+    roomCount: Int
 
     """縮放級距"""
     zoom: Int!
