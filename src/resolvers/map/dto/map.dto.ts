@@ -193,18 +193,21 @@ export class MapInfoResponseDTO {
 
 @ArgsType()
 export class PaginatedDTO {
-    @Field((type) => Int)
+    @Field((type) => Int, { nullable: true })
+    @IsOptional()
     @IsInt()
     @Min(1)
-    page: number;
+    page?: number;
 
-    @Field((type) => Int)
+    @Field((type) => Int, { nullable: true })
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
     @Min(1)
-    offset: number;
+    offset?: number;
 
     @Field((type) => Int, { nullable: true })
+    @IsOptional()
     @IsInt()
     @IsOptional()
     skip?: number;

@@ -20,7 +20,6 @@ export class Country {
         length: 10,
         comment: '國家字母代碼',
         unique: true,
-        nullable: true,
     })
     code: string;
 
