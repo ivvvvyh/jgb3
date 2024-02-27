@@ -9,7 +9,8 @@ export class Estate {
         type: 'varchar',
         length: 255,
         comment: '物件名稱',
-        nullable: true,
+        nullable: false,
+        default: '',
     })
     name: string;
 
@@ -17,7 +18,8 @@ export class Estate {
         type: 'varchar',
         length: 255,
         comment: '地址',
-        nullable: true,
+        nullable: false,
+        default: '',
     })
     address: string;
 
@@ -26,21 +28,24 @@ export class Estate {
         comment: '座標',
         spatialFeatureType: 'Point',
         srid: 4326, // SRID for WGS 84 (standard for GPS coordinates),
-        nullable: true,
+        nullable: false,
+        default: 'SRID=4326;POINT(0 0)', // 设置默认值为 [0, 0]
     })
     coordinates: Point;
 
     @Column({
         type: 'int2',
-        comment: '用途(1:住宅、2:商用、3:車位)',
-        nullable: true,
+        comment: '用途(0: 未定義、1:住宅、2:商用、3:車位)',
+        nullable: false,
+        default: 0,
     })
     usage: number;
 
     @Column({
         type: 'int2',
-        comment: '建築類型(1:大樓、2:公寓、3:透天厝、4:別墅、5:華夏、6:農舍)',
-        nullable: true,
+        comment: '建築類型(0: 未定義、1:大樓、2:公寓、3:透天厝、4:別墅、5:華夏、6:農舍)',
+        nullable: false,
+        default: 0,
     })
     building_type: number;
 
@@ -68,7 +73,8 @@ export class Estate {
     @Column({
         type: 'int',
         comment: '租金',
-        nullable: true,
+        nullable: false,
+        default: 0,
     })
     rent: number;
 
