@@ -32,7 +32,7 @@ export class MapResolver {
     @ResolveField('estates', (returns) => PaginatedEstateDTO)
     async getEstates(@Args() args: PaginatedDTO, @Context() ctx) {
         const mapInfoArgs = ctx.getMapInfoArgs;
-        const { page, offset } = args;
+        const { page = 1, offset = 20 } = args;
         const skip = (page - 1) * offset;
 
         const { result, totalCount } = await this.mapService.getEstatesByPage({ ...mapInfoArgs, skip, offset });

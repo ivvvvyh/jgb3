@@ -78,7 +78,7 @@ input LocationInput {
 }
 
 type MapInfoResponseDTO {
-  estates(offset: Int!, page: Int!, skip: Int): PaginatedEstateDTO!
+  estates(offset: Int, page: Int, skip: Int): PaginatedEstateDTO!
   info: [InfoResponseDTO!]
 }
 
