@@ -17,7 +17,7 @@ export class MapResolver {
         ctx.getMapInfoArgs = mapInfoArgs;
 
         let viewLevel = MAP_VIEW_LEVEL.COUNTRY;
-        const countryZoomLevel = 3;
+        const countryZoomLevel = 8;
         if (zoom > countryZoomLevel) {
             const countryCode = countryId
                 ? await this.mapService.getCountryCodeById(countryId)
