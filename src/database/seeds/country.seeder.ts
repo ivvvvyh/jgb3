@@ -1,6 +1,6 @@
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DataSource } from 'typeorm';
-import { Country } from 'src/entity/countries.entity';
+import { Country } from 'src/entity/jgb3/countries.entity';
 
 export default class CountrySeeder implements Seeder {
     public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {

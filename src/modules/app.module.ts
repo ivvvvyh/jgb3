@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
 import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { TimeoutInterceptor } from 'src/common/interceptors/timeout.interceptor';
@@ -17,6 +18,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { MapModule } from 'src/modules/map/map.module';
 import { AppLoggerMiddleware } from '../common/middlewars/logger.middleware';
+import { CronjobsModule } from 'src/modules/cronjob/cronjobs.module';
 
 @Module({
     imports: [AuthModule, UserModule, MapModule],
@@ -26,6 +28,8 @@ export class APIModule {}
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        CronjobsModule,
+        ScheduleModule.forRoot(),
         DatabaseModule,
         CacheModule,
         HttpModule,

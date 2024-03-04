@@ -6,7 +6,7 @@ import { UserService } from 'src/services/user/user.service';
 import { CreateUserDTO, UserDTO } from 'src/services/auth/dto/user.dto';
 import { ConflictException, NotFoundException, UnauthorizedException } from 'src/common/exceptions/custom.exception';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/entity/users.entity';
+import { User } from 'src/entity/jgb3/users.entity';
 
 jest.mock('bcrypt');
 jest.mock('@nestjs/config');
@@ -52,11 +52,14 @@ describe('AuthService', () => {
         });
 
         it('should throw ConflictException if username already exists', async () => {
-            const createUserDto: CreateUserDTO = {
+            const createUserDto = {
                 email: 'existing@example.com',
                 password: 'password123',
-            };
-            const existingUser = new User(createUserDto);
+            } as unknown as User;
+            const existingUser = {
+                email: 'existing@example.com',
+                password: 'password123',
+            } as unknown as User;
             jest.spyOn(userService, 'findOne').mockResolvedValue(existingUser);
 
             await expect(authService.register(createUserDto)).rejects.toThrowError(ConflictException);

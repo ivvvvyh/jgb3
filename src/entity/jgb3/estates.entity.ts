@@ -1,7 +1,14 @@
-import { Entity, Column, Point, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, Point, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeUpdate, BeforeInsert } from 'typeorm';
+import { PURPOSE_KEY } from 'src/common/enums/estate.enum';
 
 @Entity('estate')
 export class Estate {
+    @BeforeInsert()
+    @BeforeUpdate()
+    SaveEstate?() {
+        if (!this.updated_at) this.updated_at = new Date();
+    }
+
     @PrimaryGeneratedColumn({ comment: 'ID' })
     id: number;
 
@@ -35,7 +42,7 @@ export class Estate {
 
     @Column({
         type: 'int2',
-        comment: '用途(0: 未定義、1:住宅、2:商用、3:車位)',
+        comment: '用途(0: 未定義、1:住宅、2:商用、3:車位)', // 'residential','business','parking_space'
         nullable: false,
         default: 0,
     })
@@ -43,25 +50,32 @@ export class Estate {
 
     @Column({
         type: 'int2',
-        comment: '建築類型(0: 未定義、1:大樓、2:公寓、3:透天厝、4:別墅、5:華夏、6:農舍)',
+        comment: '地產類型(1:一般房屋、2:社會住宅、3:公共空間)',
+        nullable: false,
+    })
+    type: PURPOSE_KEY;
+
+    @Column({
+        type: 'int2',
+        comment: '建築類型(0: 未定義、1:大樓、2:公寓、3:透天厝、4:別墅、5:華夏、6:農舍、7:土地)',
         nullable: false,
         default: 0,
     })
     building_type: number;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
         comment: '樓層',
         nullable: true,
     })
-    floor: number;
+    floor: string;
 
     @Column({
-        type: 'int',
+        type: 'varchar',
         comment: '總樓層',
         nullable: true,
     })
-    total_floor: number;
+    total_floor: string;
 
     @Column({
         type: 'float',
@@ -95,7 +109,7 @@ export class Estate {
     @Column({
         type: 'json',
         comment: '格局',
-        default: () => '\'{"room": 0, "living_room": 0, "bathroom": 0, "kitchen": 0, "balcony": 0}\'',
+        default: () => '\'{"room": 0, "living_room": 0, "office":0, "bathroom": 0, "kitchen": 0, "balcony": 0}\'',
     })
     layout: Record<string, any>[];
 

@@ -24,7 +24,7 @@ type EstateResponseDTO {
   districtId: Int
 
   """物件樓層"""
-  floor: Int
+  floor: String
   id: Int
 
   """格局"""
@@ -43,7 +43,7 @@ type EstateResponseDTO {
   size: Float
 
   """總樓層"""
-  totalFloor: Int
+  totalFloor: String
 
   """用途"""
   usage: Int
