@@ -10,7 +10,7 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: ['dist/**/*.entity.js'],
+    entities: ['dist/entity/jgb3/*.entity.js'],
     seeds: ['dist/database/seeds/**/*{.ts,.js}'],
     synchronize: true,
 };

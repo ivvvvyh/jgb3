@@ -151,16 +151,16 @@ export class EstateResponseDTO extends AreaInput {
     @IsOptional()
     buildingType?: number;
 
-    @Field((type) => Int, { nullable: true, description: '物件樓層' })
-    @IsInt()
+    @Field((type) => String, { nullable: true, description: '物件樓層' })
+    @IsString()
     @IsOptional()
-    floor?: number;
+    floor?: string;
 
-    @Field((type) => Int, { nullable: true, description: '總樓層' })
-    @IsInt()
+    @Field((type) => String, { nullable: true, description: '總樓層' })
+    @IsString()
     @Expose({ name: 'total_floor' })
     @IsOptional()
-    totalFloor?: number;
+    totalFloor?: string;
 
     @Field((type) => Float, { nullable: true, description: '坪數(m2)' })
     @IsInt()

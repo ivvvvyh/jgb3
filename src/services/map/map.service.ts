@@ -6,8 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { catchError, map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
-import { Country } from 'src/entity/countries.entity';
-import { Estate } from 'src/entity/estates.entity';
+import { Country } from 'src/entity/jgb3/countries.entity';
+import { Estate } from 'src/entity/jgb3/estates.entity';
 import { GetMapInfoDTO, CoordinateDTO, PaginatedDTO, InfoResponseDTO, EstateResponseDTO } from 'src/resolvers/map/dto/map.dto';
 import { InterServerException, NotFoundException } from 'src/common/exceptions/custom.exception';
 import { MAP_VIEW_LEVEL } from 'src/common/enums/map.enum';
@@ -22,9 +22,9 @@ export class MapService extends BaseService<Estate> {
     constructor(
         @Inject(CACHE_MANAGER)
         private cacheService: Cache,
-        @InjectRepository(Country)
+        @InjectRepository(Country, 'jgb3')
         private countryRepository: Repository<Country>,
-        @InjectRepository(Estate)
+        @InjectRepository(Estate, 'jgb3')
         private estateRepository: Repository<Estate>,
 
         private readonly httpService: HttpService,
