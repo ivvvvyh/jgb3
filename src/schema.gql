@@ -42,6 +42,9 @@ type EstateResponseDTO {
   """坪數(m2)"""
   size: Float
 
+  """空間型態"""
+  spaceType: Int
+
   """總樓層"""
   totalFloor: String
 
@@ -82,6 +85,14 @@ type MapInfoResponseDTO {
   info: [InfoResponseDTO!]
 }
 
+type OptionDTO {
+  """最高值"""
+  max: Int!
+
+  """最低值"""
+  min: Int!
+}
+
 type PaginatedEstateDTO {
   edges: [EstateResponseDTOEdge!]
   hasNextPage: Boolean!
@@ -90,6 +101,7 @@ type PaginatedEstateDTO {
 }
 
 type Query {
+  estatesSearchOptions: SearchOptionsResponseDTO!
   mapInfo(
     """建築類型"""
     buildingType: Int
@@ -115,7 +127,18 @@ type Query {
     """房間數量"""
     roomCount: Int
 
+    """空間型態"""
+    spaceType: Int
+
     """縮放級距"""
     zoom: Int!
   ): MapInfoResponseDTO!
+}
+
+type SearchOptionsResponseDTO {
+  """租金"""
+  rent: OptionDTO!
+
+  """面積"""
+  size: OptionDTO!
 }

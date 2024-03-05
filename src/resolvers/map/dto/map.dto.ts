@@ -61,6 +61,11 @@ export class GetMapInfoDTO {
     @IsOptional()
     buildingType?: number;
 
+    @Field((type) => Int, { nullable: true, description: '空間型態' })
+    @IsInt()
+    @IsOptional()
+    spaceType?: number;
+
     @Field((type) => Int, { nullable: true, description: '房間數量' })
     @IsInt()
     @IsOptional()
@@ -151,6 +156,12 @@ export class EstateResponseDTO extends AreaInput {
     @IsOptional()
     buildingType?: number;
 
+    @Field((type) => Int, { nullable: true, description: '空間型態' })
+    @IsInt()
+    @Expose({ name: 'space_type' })
+    @IsOptional()
+    spaceType?: number;
+
     @Field((type) => String, { nullable: true, description: '物件樓層' })
     @IsString()
     @IsOptional()
@@ -211,4 +222,24 @@ export class PaginatedDTO {
     @IsInt()
     @IsOptional()
     skip?: number;
+}
+
+@ObjectType()
+export class OptionDTO {
+    @Field((type) => Int, { nullable: false, description: '最低值' })
+    @IsInt()
+    min: number;
+
+    @Field((type) => Int, { nullable: false, description: '最高值' })
+    @IsInt()
+    max: number;
+}
+
+@ObjectType()
+export class SearchOptionsResponseDTO {
+    @Field(() => OptionDTO, { nullable: false, description: '租金' })
+    rent: OptionDTO;
+
+    @Field(() => OptionDTO, { nullable: false, description: '面積' })
+    size: OptionDTO;
 }

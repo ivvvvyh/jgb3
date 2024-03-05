@@ -52,7 +52,9 @@
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.19",
-    "typeorm-extension": "^3.4.0"
+    "typeorm-extension": "^3.4.0",
+    "common-modules":"https://github.com/jgbsmartproperty/Common-Modules.git#main"
+
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
