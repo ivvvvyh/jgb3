@@ -1,4 +1,4 @@
-import { viewLevel } from 'src/config/map.config';
+import { viewLevel } from 'common-modules/config/zip';
 import { MAP_VIEW_LEVEL } from 'src/common/enums/map.enum';
 import { NotFoundException } from 'src/common/exceptions/custom.exception';
 

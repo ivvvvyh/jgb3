@@ -85,6 +85,14 @@ type MapInfoResponseDTO {
   info: [InfoResponseDTO!]
 }
 
+type OptionDTO {
+  """最高值"""
+  max: Int!
+
+  """最低值"""
+  min: Int!
+}
+
 type PaginatedEstateDTO {
   edges: [EstateResponseDTOEdge!]
   hasNextPage: Boolean!
@@ -93,6 +101,7 @@ type PaginatedEstateDTO {
 }
 
 type Query {
+  estatesSearchOptions: SearchOptionsResponseDTO!
   mapInfo(
     """建築類型"""
     buildingType: Int
@@ -124,4 +133,12 @@ type Query {
     """縮放級距"""
     zoom: Int!
   ): MapInfoResponseDTO!
+}
+
+type SearchOptionsResponseDTO {
+  """租金"""
+  rent: OptionDTO!
+
+  """面積"""
+  size: OptionDTO!
 }

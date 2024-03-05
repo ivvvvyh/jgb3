@@ -1,5 +1,5 @@
 import { Resolver, Query, Args, ResolveField, Context } from '@nestjs/graphql';
-import { GetMapInfoDTO, MapInfoResponseDTO, PaginatedEstateDTO, PaginatedDTO } from './dto/map.dto';
+import { GetMapInfoDTO, MapInfoResponseDTO, PaginatedEstateDTO, PaginatedDTO, SearchOptionsResponseDTO } from './dto/map.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { MapService } from 'src/services/map/map.service';
 import { getMapViewLevel } from 'src/utils/map.utils';
@@ -40,5 +40,10 @@ export class MapResolver {
         const hasNextPage = skip + offset < totalCount;
 
         return { edges, nodes: result, hasNextPage, totalCount };
+    }
+
+    @Query((returns) => SearchOptionsResponseDTO, { name: 'estatesSearchOptions' })
+    async getEstateSearchOption(): Promise<SearchOptionsResponseDTO> {
+        return await this.mapService.getEstatesSearchOption();
     }
 }

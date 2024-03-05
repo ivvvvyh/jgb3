@@ -8,7 +8,14 @@ import { catchError, map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { Country } from 'src/entity/jgb3/countries.entity';
 import { Estate } from 'src/entity/jgb3/estates.entity';
-import { GetMapInfoDTO, CoordinateDTO, PaginatedDTO, InfoResponseDTO, EstateResponseDTO } from 'src/resolvers/map/dto/map.dto';
+import {
+    GetMapInfoDTO,
+    CoordinateDTO,
+    PaginatedDTO,
+    InfoResponseDTO,
+    EstateResponseDTO,
+    SearchOptionsResponseDTO,
+} from 'src/resolvers/map/dto/map.dto';
 import { InterServerException, NotFoundException } from 'src/common/exceptions/custom.exception';
 import { MAP_VIEW_LEVEL } from 'src/common/enums/map.enum';
 import { BaseService } from 'src/services/base.service';
@@ -17,6 +24,7 @@ import { Cache } from 'cache-manager';
 import { plainToClass } from 'class-transformer';
 import { snakeCase } from 'src/utils/database.utils';
 import { PurposeKey } from 'common-modules/config/enum';
+import { viewLevel } from 'common-modules/config/zip';
 
 @Injectable()
 export class MapService extends BaseService<Estate> {
@@ -251,5 +259,31 @@ export class MapService extends BaseService<Estate> {
         let totalCount = result.length ? result[0].total_count : 0;
 
         return { result, totalCount };
+    }
+
+    async getEstatesSearchOption(): Promise<SearchOptionsResponseDTO> {
+        const redisKey = `map:searchOption`;
+        const cacheData = await this.cacheService.get<string>(redisKey);
+        if (cacheData) return JSON.parse(cacheData);
+        const queryResult = await this.estateRepository
+            .createQueryBuilder('estate')
+            .andWhere(`type != :type`, { type: PurposeKey.SHARE_HOUSING })
+            .andWhere('is_deleted = :isDeleted', { isDeleted: false })
+            .andWhere('is_advertised = :isAdvertised', { isAdvertised: true })
+            .select([
+                'MAX(estate.rent) as "maxRent"',
+                'MIN(estate.rent) as "minRent"',
+                'MAX(estate.size) as "maxSize"',
+                'MIN(estate.size) as "minSize"',
+            ])
+            .getRawOne();
+
+        const result = {
+            rent: { min: queryResult.minRent, max: queryResult.maxRent },
+            size: { min: queryResult.minSize, max: queryResult.maxSize },
+        };
+
+        await this.cacheService.set(redisKey, JSON.stringify(result), 1 * 60 * 60 * 1000);
+        return result;
     }
 }

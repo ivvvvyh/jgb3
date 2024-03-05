@@ -223,3 +223,23 @@ export class PaginatedDTO {
     @IsOptional()
     skip?: number;
 }
+
+@ObjectType()
+export class OptionDTO {
+    @Field((type) => Int, { nullable: false, description: '最低值' })
+    @IsInt()
+    min: number;
+
+    @Field((type) => Int, { nullable: false, description: '最高值' })
+    @IsInt()
+    max: number;
+}
+
+@ObjectType()
+export class SearchOptionsResponseDTO {
+    @Field(() => OptionDTO, { nullable: false, description: '租金' })
+    rent: OptionDTO;
+
+    @Field(() => OptionDTO, { nullable: false, description: '面積' })
+    size: OptionDTO;
+}
