@@ -6,9 +6,9 @@ import { DataSource, Repository, Point } from 'typeorm';
 import { Estate } from 'src/entity/jgb3/estates.entity';
 import { Estate as MySqlEstate } from 'src/entity/jgb2/estates.entity';
 import { CronjobsService } from '../cronjobs.service';
-import { BUILDING_TYPE, PURPOSE_KEY, USAGE, SpaceType } from 'src/common/enums/estate.enum';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { BuildingType, SpaceType, PurposeKey, Usage } from 'common-modules/config/enum';
 
 @Processor('task')
 export class SyncEstateConsumer {
@@ -152,32 +152,32 @@ export class SyncEstateConsumer {
     private convertUsage(usage: string) {
         switch (usage) {
             case 'residential':
-                return USAGE.RESIDENTIAL;
+                return Usage.RESIDENTIAL;
             case 'business':
-                return USAGE.BUSINESS;
+                return Usage.BUSINESS;
             case 'parking_space':
-                return USAGE.PARKING_SPACE;
+                return Usage.PARKING_SPACE;
             default:
-                return USAGE.UNDEFINED;
+                return Usage.UNDEFINED;
         }
     }
 
     private convertBuildingType(type: string) {
         switch (type) {
             case 'condo':
-                return BUILDING_TYPE.CONDO;
+                return BuildingType.CONDO;
             case 'apartment':
-                return BUILDING_TYPE.APARTMENT;
+                return BuildingType.APARTMENT;
             case 'villa':
-                return BUILDING_TYPE.VILLA;
+                return BuildingType.VILLA;
             case 'townhouse':
-                return BUILDING_TYPE.TOWNHOUSE;
+                return BuildingType.TOWNHOUSE;
             case 'condominium':
-                return BUILDING_TYPE.CONDOMINIUM;
+                return BuildingType.CONDOMINIUM;
             case 'farmhouse':
-                return BUILDING_TYPE.FARMHOUSE;
+                return BuildingType.FARMHOUSE;
             default:
-                return BUILDING_TYPE.UNDEFINED;
+                return BuildingType.UNDEFINED;
         }
     }
 
@@ -221,7 +221,7 @@ export class SyncEstateConsumer {
         const layout = { room: 0, living_room: 0, office: 0, bathroom: 0, kitchen: 0, balcony: 0 };
 
         switch (purposeKey) {
-            case PURPOSE_KEY.GENERAL_HOUSING:
+            case PurposeKey.GENERAL_HOUSING:
                 if (!generalData || !generalData.pattern) return layout;
                 const generalPattern = generalData.pattern;
                 layout.room = generalPattern.room ? generalPattern.room.length : 0;
@@ -231,10 +231,10 @@ export class SyncEstateConsumer {
                 layout.kitchen = generalPattern.kitchen ? generalPattern.kitchen.length : 0;
                 layout.balcony = generalPattern.balcony ? generalPattern.balcony.length : 0;
                 return layout;
-            case PURPOSE_KEY.SOCIAL_HOUSING:
+            case PurposeKey.SOCIAL_HOUSING:
                 if (!socialData) return layout;
                 return { ...socialData, office: 0 };
-            case PURPOSE_KEY.SHARE_HOUSING:
+            case PurposeKey.SHARE_HOUSING:
             default:
                 return layout;
         }

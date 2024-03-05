@@ -1,5 +1,5 @@
 import { Entity, Index, Column, Point, CreateDateColumn, UpdateDateColumn, BeforeUpdate, BeforeInsert, PrimaryColumn } from 'typeorm';
-import { PURPOSE_KEY } from 'src/common/enums/estate.enum';
+import { PurposeKey } from 'common-modules/config/enum';
 
 @Entity('estate')
 export class Estate {
@@ -54,7 +54,7 @@ export class Estate {
         comment: '地產類型(1:一般房屋、2:社會住宅、3:公共空間)',
         nullable: false,
     })
-    type: PURPOSE_KEY;
+    type: PurposeKey;
 
     @Column({
         type: 'int2',
