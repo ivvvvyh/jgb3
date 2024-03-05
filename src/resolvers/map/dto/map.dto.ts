@@ -61,6 +61,11 @@ export class GetMapInfoDTO {
     @IsOptional()
     buildingType?: number;
 
+    @Field((type) => Int, { nullable: true, description: '空間型態' })
+    @IsInt()
+    @IsOptional()
+    spaceType?: number;
+
     @Field((type) => Int, { nullable: true, description: '房間數量' })
     @IsInt()
     @IsOptional()
@@ -150,6 +155,12 @@ export class EstateResponseDTO extends AreaInput {
     @Expose({ name: 'building_type' })
     @IsOptional()
     buildingType?: number;
+
+    @Field((type) => Int, { nullable: true, description: '空間型態' })
+    @IsInt()
+    @Expose({ name: 'space_type' })
+    @IsOptional()
+    spaceType?: number;
 
     @Field((type) => String, { nullable: true, description: '物件樓層' })
     @IsString()

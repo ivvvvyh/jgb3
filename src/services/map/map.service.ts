@@ -16,6 +16,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { plainToClass } from 'class-transformer';
 import { snakeCase } from 'src/utils/database.utils';
+import { PurposeKey } from 'common-modules/config/enum';
 
 @Injectable()
 export class MapService extends BaseService<Estate> {
@@ -60,15 +61,20 @@ export class MapService extends BaseService<Estate> {
     }
 
     async getEstatesAmountInRange(data: Omit<GetMapInfoDTO, 'zoom'> & { level: MAP_VIEW_LEVEL }): Promise<InfoResponseDTO[]> {
-        const { countryId, cityId, districtId, level, center, radius, buildingType, roomCount, minRoomCount, maxRent, minRent } = data;
+        const { countryId, cityId, districtId, level, center, radius, buildingType, spaceType, roomCount, minRoomCount, maxRent, minRent } = data;
 
-        const queryBuilder = this.estateRepository.createQueryBuilder('estate');
+        const queryBuilder = this.estateRepository
+            .createQueryBuilder('estate')
+            .andWhere(`type != :type`, { type: PurposeKey.SHARE_HOUSING })
+            .andWhere('is_deleted = :isDeleted', { isDeleted: false })
+            .andWhere('is_advertised = :isAdvertised', { isAdvertised: true });
 
         const whereConditions: Record<string, any> = {
             countryId,
             cityId,
             districtId,
             buildingType,
+            spaceType,
             roomCount,
             maxRent,
             minRent,
@@ -97,7 +103,7 @@ export class MapService extends BaseService<Estate> {
         let selectColumns: string[];
         let groupByColumns: string[];
 
-        let redisKey = `map:level:${level}:country:${countryId ?? 0}:city:${cityId ?? 0}:district:${districtId ?? 0}:buildingType:${buildingType ?? 0}:roomCount:${roomCount ?? 0}:minRoomCount:${minRoomCount ?? 0}:minRent:${minRent ?? 0}:maxRent:${maxRent ?? 0}`;
+        let redisKey = `map:level:${level}:country:${countryId ?? 0}:city:${cityId ?? 0}:district:${districtId ?? 0}:buildingType:${buildingType ?? 0}:spaceType:${spaceType ?? 0}:roomCount:${roomCount ?? 0}:minRoomCount:${minRoomCount ?? 0}:minRent:${minRent ?? 0}:maxRent:${maxRent ?? 0}`;
         switch (level) {
             case MAP_VIEW_LEVEL.COUNTRY:
                 selectColumns = ['country_id', 'COUNT(id) as amount'];
@@ -153,25 +159,47 @@ export class MapService extends BaseService<Estate> {
 
         const result = await queryBuilder.select(selectColumns).groupBy(groupByColumns.join(',')).getRawMany();
         const transformedResult = result.map((element) => plainToClass(InfoResponseDTO, element, { strategy: 'excludeAll' }));
-        await this.cacheService.set(redisKey, JSON.stringify(transformedResult), 12 * 60 * 60 * 1000);
+        await this.cacheService.set(redisKey, JSON.stringify(transformedResult), 1 * 60 * 60 * 1000);
         return transformedResult;
     }
 
     async getEstatesByPage(data: Omit<GetMapInfoDTO, 'zoom'> & Omit<PaginatedDTO, 'page'>) {
-        const { countryId, cityId, districtId, center, radius, skip, offset, buildingType, roomCount, maxRent, minRent, minRoomCount } = data;
+        const { countryId, cityId, districtId, center, radius, skip, offset, buildingType, spaceType, roomCount, maxRent, minRent, minRoomCount } =
+            data;
 
         const queryBuilder = this.estateRepository.createQueryBuilder('estate');
+        // 定位點條件
+        if (center && radius) {
+            const { longitude, latitude } = center;
+            queryBuilder
+                .andWhere(
+                    `ST_DWithin(
+                estate.coordinates::geography,
+                ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
+                :radius
+            )`,
+                )
+                .setParameters({ longitude, latitude, radius });
+        }
+
+        queryBuilder
+            .andWhere(`type != :type`, { type: PurposeKey.SHARE_HOUSING })
+            .andWhere('is_deleted = :isDeleted', { isDeleted: false })
+            .andWhere('is_advertised = :isAdvertised', { isAdvertised: true });
+
         // 地區條件
         const whereConditions: Record<string, any> = {
             countryId,
             cityId,
             districtId,
             buildingType,
+            spaceType,
             roomCount,
             maxRent,
             minRent,
             minRoomCount,
         };
+
         Object.entries(whereConditions).forEach(([key, value]) => {
             if (value) {
                 const transformedKey = snakeCase(key);
@@ -191,21 +219,6 @@ export class MapService extends BaseService<Estate> {
                 }
             }
         });
-
-        // 定位點條件
-        if (center && radius) {
-            const { longitude, latitude } = center;
-            queryBuilder
-                .andWhere(
-                    `ST_DWithin(
-                estate.coordinates::geography,
-                ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
-                :radius
-            )`,
-                )
-                .setParameters({ longitude, latitude, radius });
-        }
-
         let result = await queryBuilder
             .select([
                 'id',
@@ -220,11 +233,13 @@ export class MapService extends BaseService<Estate> {
                 'total_floor',
                 'usage',
                 'building_type',
+                'space_type',
                 'rent',
                 'gallery',
                 'layout',
                 'size',
                 'room_count',
+                'count(*) OVER() AS total_count',
             ])
             .skip(skip)
             .take(offset)
@@ -233,8 +248,7 @@ export class MapService extends BaseService<Estate> {
         result = result.map((item) =>
             plainToClass(EstateResponseDTO, { ...item, coordinates: { latitude: item.latitude, longitude: item.longitude } }),
         );
-
-        let totalCount = await queryBuilder.getCount();
+        let totalCount = result.length ? result[0].total_count : 0;
 
         return { result, totalCount };
     }

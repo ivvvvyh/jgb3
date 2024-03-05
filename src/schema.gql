@@ -42,6 +42,9 @@ type EstateResponseDTO {
   """坪數(m2)"""
   size: Float
 
+  """空間型態"""
+  spaceType: Int
+
   """總樓層"""
   totalFloor: String
 
@@ -114,6 +117,9 @@ type Query {
 
     """房間數量"""
     roomCount: Int
+
+    """空間型態"""
+    spaceType: Int
 
     """縮放級距"""
     zoom: Int!
