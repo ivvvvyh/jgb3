@@ -19,6 +19,7 @@ import { join } from 'path';
 import { MapModule } from 'src/modules/map/map.module';
 import { AppLoggerMiddleware } from '../common/middlewars/logger.middleware';
 import { CronjobsModule } from 'src/modules/cronjob/cronjobs.module';
+import { QueueModule } from 'src/modules/queue/queue.module';
 
 @Module({
     imports: [AuthModule, UserModule, MapModule],
@@ -30,6 +31,7 @@ export class APIModule {}
         ConfigModule.forRoot({ isGlobal: true }),
         CronjobsModule,
         ScheduleModule.forRoot(),
+        QueueModule,
         DatabaseModule,
         CacheModule,
         HttpModule,

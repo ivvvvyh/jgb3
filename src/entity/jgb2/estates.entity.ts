@@ -26,6 +26,9 @@ export class Estate {
     @Column({ nullable: true, length: 20 })
     building: string;
 
+    @Column({ type: 'varchar', length: 20, nullable: true, comment: '空間類型' })
+    space_type: string;
+
     @Column({ nullable: true, length: 20 })
     floor: string;
 
@@ -52,6 +55,15 @@ export class Estate {
 
     @Column({ nullable: true, type: 'text' })
     gallery: string;
+
+    @Column({ type: 'tinyint', unsigned: true, default: 0, comment: '啟用狀態 0:尚未啟用 1:已啟用' })
+    active: number;
+
+    @Column({ default: 1 })
+    is_open: number;
+
+    @Column({ default: 1 })
+    is_publish: number;
 
     @Column({ nullable: true })
     country_id: number;

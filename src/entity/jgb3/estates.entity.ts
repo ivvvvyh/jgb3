@@ -1,4 +1,4 @@
-import { Entity, Column, Point, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeUpdate, BeforeInsert } from 'typeorm';
+import { Entity, Index, Column, Point, CreateDateColumn, UpdateDateColumn, BeforeUpdate, BeforeInsert, PrimaryColumn } from 'typeorm';
 import { PURPOSE_KEY } from 'src/common/enums/estate.enum';
 
 @Entity('estate')
@@ -9,7 +9,7 @@ export class Estate {
         if (!this.updated_at) this.updated_at = new Date();
     }
 
-    @PrimaryGeneratedColumn({ comment: 'ID' })
+    @PrimaryColumn({ comment: 'ID' })
     id: number;
 
     @Column({
@@ -38,6 +38,7 @@ export class Estate {
         nullable: false,
         default: 'SRID=4326;POINT(0 0)', // 设置默认值为 [0, 0]
     })
+    @Index('idx_coordinates', { spatial: true })
     coordinates: Point;
 
     @Column({
@@ -62,6 +63,14 @@ export class Estate {
         default: 0,
     })
     building_type: number;
+
+    @Column({
+        type: 'int2',
+        comment: '空間類型',
+        nullable: false,
+        default: 0,
+    })
+    space_type: number;
 
     @Column({
         type: 'varchar',
@@ -133,6 +142,15 @@ export class Estate {
         nullable: true,
     })
     district_id: number;
+
+    @Column({ type: 'boolean', comment: '是否刊登廣告', nullable: false, default: false })
+    is_advertised: boolean;
+
+    @Column({ type: 'boolean', comment: '是否刊登房源媒合平台', nullable: false, default: false })
+    is_published: boolean;
+
+    @Column({ type: 'boolean', comment: '是否刪除', nullable: false, default: false })
+    is_deleted: boolean;
 
     @UpdateDateColumn({ comment: '更新時間', onUpdate: 'NOW()' })
     updated_at: Date;
